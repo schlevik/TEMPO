@@ -1,3 +1,4 @@
+import shutil
 import numpy as np
 import torch
 import torch.nn as nn
@@ -332,7 +333,6 @@ def test(model, test_data, test_loader, args, device, itr):
     total_mae = 0
     total_mse = 0
     n_samples = 0
-
     model.eval()
     with torch.no_grad():
         for i, data in tqdm(enumerate(test_loader), total=len(test_loader)):
@@ -404,3 +404,130 @@ def test(model, test_data, test_loader, args, device, itr):
     # print('mae:{:.4f}, mse:{:.4f}, rmse:{:.4f}, smape:{:.4f}'.format(mae, mse, rmse, smape))
 
     return mse, mae
+
+def adjust_learning_rate_m4(accelerator, optimizer, scheduler, epoch, args, printout=True):
+    if args.lradj == 'type1':
+        lr_adjust = {epoch: args.learning_rate * (0.5 ** ((epoch - 1) // 1))}
+    elif args.lradj == 'type2':
+        lr_adjust = {
+            2: 5e-5, 4: 1e-5, 6: 5e-6, 8: 1e-6,
+            10: 5e-7, 15: 1e-7, 20: 5e-8
+        }
+    elif args.lradj == 'type3':
+        lr_adjust = {epoch: args.learning_rate if epoch < 3 else args.learning_rate * (0.9 ** ((epoch - 3) // 1))}
+    elif args.lradj == 'PEMS':
+        lr_adjust = {epoch: args.learning_rate * (0.95 ** (epoch // 1))}
+    elif args.lradj == 'TST':
+        lr_adjust = {epoch: scheduler.get_last_lr()[0]}
+    elif args.lradj == 'constant':
+        lr_adjust = {epoch: args.learning_rate}
+    if epoch in lr_adjust.keys():
+        lr = lr_adjust[epoch]
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = lr
+        if printout:
+            if accelerator is not None:
+                accelerator.print('Updating learning rate to {}'.format(lr))
+            else:
+                print('Updating learning rate to {}'.format(lr))
+                
+class EarlyStoppingM4:
+    def __init__(self, accelerator=None, patience=7, verbose=False, delta=0, save_mode=True):
+        self.accelerator = accelerator
+        self.patience = patience
+        self.verbose = verbose
+        self.counter = 0
+        self.best_score = None
+        self.early_stop = False
+        self.val_loss_min = np.Inf
+        self.delta = delta
+        self.save_mode = save_mode
+
+    def __call__(self, val_loss, model, path):
+        score = -val_loss
+        if self.best_score is None:
+            self.best_score = score
+            if self.save_mode:
+                self.save_checkpoint(val_loss, model, path)
+        elif score < self.best_score + self.delta:
+            self.counter += 1
+            if self.accelerator is None:
+                print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+            else:
+                self.accelerator.print(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+            if self.counter >= self.patience:
+                self.early_stop = True
+        else:
+            self.best_score = score
+            if self.save_mode:
+                self.save_checkpoint(val_loss, model, path)
+            self.counter = 0
+
+    def save_checkpoint(self, val_loss, model, path):
+        if self.verbose:
+            if self.accelerator is not None:
+                self.accelerator.print(
+                    f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
+            else:
+                print(
+                    f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
+
+        if self.accelerator is not None:
+            model = self.accelerator.unwrap_model(model)
+            torch.save(model.state_dict(), path + '/' + 'checkpoint')
+        else:
+            torch.save(model.state_dict(), path + '/' + 'checkpoint')
+        self.val_loss_min = val_loss
+        
+def del_files(dir_path):
+    shutil.rmtree(dir_path)
+
+def load_content(args):
+    return "The M4 dataset is a collection of 100,000 time series used for the fourth edition of the Makridakis forecasting Competition. The M4 dataset consists of time series of yearly, quarterly, monthly and other (weekly, daily and hourly) data, which are divided into training and test sets. The minimum numbers of observations in the training test are 13 for yearly, 16 for quarterly, 42 for monthly, 80 for weekly, 93 for daily and 700 for hourly series. The participants were asked to produce the following numbers of forecasts beyond the available data that they had been given: six for yearly, eight for quarterly, 18 for monthly series, 13 for weekly series and 14 and 48 forecasts respectively for the daily and hourly ones."
+
+
+
+def test_m4(args, accelerator, model, train_loader, vali_loader, criterion):
+    x, _, trend, season, noise = train_loader.dataset.last_insample_window()
+    y = vali_loader.dataset.timeseries
+    
+    x = torch.tensor(x, dtype=torch.float32).to(accelerator.device)
+    x = x.unsqueeze(-1)
+    
+    trend = torch.tensor(trend, dtype=torch.float32).to(accelerator.device)
+    trend = trend.unsqueeze(-1)
+    
+    season = torch.tensor(season, dtype=torch.float32).to(accelerator.device)
+    season = season.unsqueeze(-1)
+    
+    noise = torch.tensor(noise, dtype=torch.float32).to(accelerator.device)
+    noise = noise.unsqueeze(-1)
+    
+
+    model.eval()
+    with torch.no_grad():
+        B, _, C = x.shape
+        dec_inp = torch.zeros((B, args.pred_len, C)).float().to(accelerator.device)
+        dec_inp = torch.cat([x[:, -args.label_len:, :], dec_inp], dim=1)
+        outputs = torch.zeros((B, args.pred_len, C)).float().to(accelerator.device)
+        id_list = np.arange(0, B, args.eval_batch_size)
+        id_list = np.append(id_list, B)
+        for i in range(len(id_list) - 1):
+            out, _ = model(
+                x[id_list[i]:id_list[i + 1]], -1, trend[id_list[i]:id_list[i + 1]], season[id_list[i]:id_list[i + 1]], noise[id_list[i]:id_list[i + 1]]
+                )
+            outputs[id_list[i]:id_list[i + 1], :, :] = out
+        accelerator.wait_for_everyone()
+        outputs = accelerator.gather_for_metrics(outputs)
+        f_dim = -1 if args.features == 'MS' else 0
+        outputs = outputs[:, -args.pred_len:, f_dim:]
+        pred = outputs
+        true = torch.from_numpy(np.array(y)).to(accelerator.device)
+        batch_y_mark = torch.ones(true.shape).to(accelerator.device)
+        true = accelerator.gather_for_metrics(true)
+        batch_y_mark = accelerator.gather_for_metrics(batch_y_mark)
+
+        loss = criterion(x[:, :, 0], args.frequency_map, pred[:, :, 0], true, batch_y_mark)
+
+    model.train()
+    return loss

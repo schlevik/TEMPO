@@ -216,19 +216,20 @@ for ii in range(args.itr):
         vali_loader = torch.utils.data.DataLoader(vali_data, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
 
-        args.data = config['datasets'][args.target_data].data
-        args.root_path = config['datasets'][args.target_data].root_path
-        args.data_path = config['datasets'][args.target_data].data_path
-        args.data_name = config['datasets'][args.target_data].data_name
-        args.features = config['datasets'][dataset_singe].features
-        args.freq = config['datasets'][args.target_data].freq
-        args.target = config['datasets'][args.target_data].target
-        args.embed = config['datasets'][args.target_data].embed
-        args.percent = config['datasets'][args.target_data].percent
-        args.lradj = config['datasets'][args.target_data].lradj
-        if args.freq == 0:
-            args.freq = 'h'
-        test_data, test_loader = data_provider(args, 'test')
+    args.data = config['datasets'][args.target_data].data
+    args.root_path = config['datasets'][args.target_data].root_path
+    args.data_path = config['datasets'][args.target_data].data_path
+    args.data_name = config['datasets'][args.target_data].data_name
+    args.features = config['datasets'][dataset_singe].features
+    args.freq = config['datasets'][args.target_data].freq
+    args.target = config['datasets'][args.target_data].target
+    args.embed = config['datasets'][args.target_data].embed
+    args.percent = config['datasets'][args.target_data].percent
+    args.lradj = config['datasets'][args.target_data].lradj
+    if args.freq == 0:
+        args.freq = 'h'
+    test_data, test_loader = data_provider(args, 'test')
+
 
     time_now = time.time()
     train_steps = len(train_loader) #190470 -52696

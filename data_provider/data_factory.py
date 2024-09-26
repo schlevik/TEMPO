@@ -1,4 +1,4 @@
-from data_provider.data_loader import Dataset_Custom, Dataset_Pred, Dataset_TSF, Dataset_ETT_hour, Dataset_ETT_minute
+from data_provider.data_loader import Dataset_Custom, Dataset_Pred, Dataset_TSF, Dataset_ETT_hour, Dataset_ETT_minute, Dataset_M4
 from torch.utils.data import DataLoader
 
 data_dict = {
@@ -6,6 +6,7 @@ data_dict = {
     'tsf_data': Dataset_TSF,
     'ett_h': Dataset_ETT_hour,
     'ett_m': Dataset_ETT_minute,
+    'm4': Dataset_M4,
 }
 
 
@@ -36,26 +37,42 @@ def data_provider(args, flag, drop_last_test=True, train_all=False):
         drop_last = True
         batch_size = args.batch_size
         freq = args.freq
-
-    data_set = Data(
-        root_path=args.root_path,
-        data_path=args.data_path,
-        flag=flag,
-        size=[args.seq_len, args.label_len, args.pred_len],
-        features=args.features,
-        target=args.target,
-        timeenc=timeenc,
-        freq=freq,
-        percent=percent,
-        max_len=max_len,
-        train_all=train_all,
-        data_name = args.data_name
-    )
+    if args.data == 'm4':
+        drop_last = False
+        data_set = Data(
+            root_path=args.root_path,
+            data_path=args.data_path,
+            flag=flag,
+            size=[args.seq_len, args.label_len, args.pred_len],
+            features=args.features,
+            target=args.target,
+            timeenc=timeenc,
+            freq=freq,
+            seasonal_patterns=args.seasonal_patterns
+        )
+    else:
+        data_set = Data(
+            root_path=args.root_path,
+            data_path=args.data_path,
+            flag=flag,
+            size=[args.seq_len, args.label_len, args.pred_len],
+            features=args.features,
+            target=args.target,
+            timeenc=timeenc,
+            freq=freq,
+            percent=percent,
+            max_len=max_len,
+            train_all=train_all,
+            data_name = args.data_name
+        )
     print(flag, len(data_set))
     data_loader = DataLoader(
         data_set,
-        batch_size=batch_size,
+        batch_size=min(batch_size, len(data_set)),
         shuffle=shuffle_flag,
         num_workers=args.num_workers,
         drop_last=drop_last)
+    # if flag=='test':
+        # print('test', len(data_set), len(data_loader), batch_size, min(batch_size, len(data_set)))
+        # assert False
     return data_set, data_loader

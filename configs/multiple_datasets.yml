@@ -82,7 +82,7 @@ datasets:
     data_name: ILI
     data: custom
     lradj: type4 
-    features: M
+    features: S
     target: OT
     embed: timeF
     freq: 0

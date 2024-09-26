@@ -12,7 +12,7 @@
 # 
 # export CUDA_VISIBLE_DEVICES=2
 
-seq_len=336
+seq_len=104
 model=TEMPO #TEMPO #PatchTST 
 electri_multiplier=1
 traffic_multiplier=1
@@ -20,7 +20,7 @@ traffic_multiplier=1
 
 for percent in 100 
 do
-for pred_len in  336 720 
+for pred_len in 24 36 48 60
 do
 for tmax in 20
 do
@@ -50,7 +50,7 @@ python main_multi_6domain_release.py \
     --electri_multiplier $electri_multiplier \
     --traffic_multiplier $traffic_multiplier \
     --seq_len $seq_len \
-    --label_len 168 \
+    --label_len 18 \
     --pred_len $pred_len \
     --prompt $prompt\
     --batch_size 256 \
@@ -70,6 +70,7 @@ python main_multi_6domain_release.py \
     --model $model \
     --tmax $tmax \
     --cos 1 \
+    --num_workers 1 \
     --is_gpt 1 #>> logs/$model/loar_revin_$percent'_'percent'_'$prompt'_'prompt'_'equal'_'$equal/ettm2_pmt1_no_pool_$model'_'$gpt_layer/test'_'$seq_len'_'$pred_len'_lr'$lr.log
 
 
