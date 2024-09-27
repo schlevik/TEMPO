@@ -12,7 +12,7 @@ num_process=8
 
 comment='TimeLLM-M4'
 prompt=1
-for season in  Monthly Yearly Daily Quarterly Hourly; do  #   Weekly
+for season in Daily Quarterly Hourly Weekly Monthly Yearly; do  
   python run_m4.py \
     --task_name short_term_forecast \
     --is_training 1 \

@@ -894,7 +894,7 @@ class Dataset_M4(Dataset):
                 seasonal_stamp = []
                 resid_stamp = []
                 if self.seasonal_patterns == 'Yearly':
-                    period = None
+                    period = 10
                 elif self.seasonal_patterns == 'Quarterly':
                     period = 4
                 elif self.seasonal_patterns == 'Hourly':

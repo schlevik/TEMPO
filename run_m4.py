@@ -28,15 +28,15 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 
 from utils.tools import del_files, EarlyStoppingM4, adjust_learning_rate_m4, load_content, test_m4
 
-import builtins
-from inspect import getframeinfo, stack
-original_print = print
+# import builtins
+# from inspect import getframeinfo, stack
+# original_print = print
 
-def print_wrap(*args, **kwargs):
-    caller = getframeinfo(stack()[1][0])
-    original_print("FN:",caller.filename,"Line:", caller.lineno,"Func:", caller.function,":::", *args, **kwargs)
+# def print_wrap(*args, **kwargs):
+#     caller = getframeinfo(stack()[1][0])
+#     original_print("FN:",caller.filename,"Line:", caller.lineno,"Func:", caller.function,":::", *args, **kwargs)
 
-builtins.print = print_wrap
+# builtins.print = print_wrap
 
 test = test_m4
 adjust_learning_rate = adjust_learning_rate_m4
@@ -66,7 +66,7 @@ parser.add_argument('--batch_size', type=int, default=128)
 parser.add_argument('--num_workers', type=int, default=0)
 parser.add_argument('--train_epochs', type=int, default=10)
 parser.add_argument('--lradj', type=str, default='type3') # for what
-parser.add_argument('--patience', type=int, default=5)
+parser.add_argument('--patience', type=int, default=20)
 
 parser.add_argument('--gpt_layers', type=int, default=6)
 parser.add_argument('--is_gpt', type=int, default=1)
