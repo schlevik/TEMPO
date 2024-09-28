@@ -165,7 +165,7 @@ class Dataset_ETT_hour(Dataset):
         self.trend_stamp = trend_stamp[border1:border2]
         self.seasonal_stamp = seasonal_stamp[border1:border2]
         self.resid_stamp = resid_stamp[border1:border2]
-
+    
     def __getitem__(self, index):
         feat_id = index // self.tot_len
         s_begin = index % self.tot_len
@@ -360,7 +360,9 @@ class Dataset_ETT_minute(Dataset):
 class Dataset_Custom(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
-                 target='OT', scale=True, timeenc=0, freq='h',
+                 aug='national_illness_168_gen_50ksteps_10k.npy',
+                 aug_only=False,
+                 target='OT', scale=False, timeenc=0, freq='h',
                  percent=10, data_name = 'weather', max_len=-1, train_all=False):
         # size [seq_len, label_len, pred_len]
         # info
@@ -387,6 +389,8 @@ class Dataset_Custom(Dataset):
         self.root_path = root_path
         self.data_path = data_path
         self.data_name = data_name
+        self.aug_path = aug
+        self.aug_only = aug_only
         self.__read_data__()
         
         self.enc_in = self.data_x.shape[-1]
@@ -454,6 +458,46 @@ class Dataset_Custom(Dataset):
             with open(resid_pk, 'wb') as f:
                 pickle.dump(resid_stamp, f)
         return trend_stamp, seasonal_stamp, resid_stamp
+
+    def stl_resolve_aug(self, data_raw):
+        """
+        STL Global Decomposition
+        """
+        
+        save_stl = stl_position +  self.data_name   
+        # save_stl = 'stl/' + 'weather'   
+
+        self.save_stl = save_stl
+        trend_pk = self.save_stl + '/trend_aug.pk'
+        seasonal_pk = self.save_stl + '/seasonal_aug.pk'
+        resid_pk = self.save_stl + '/resid_aug.pk'
+        if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
+            with open(trend_pk, 'rb') as f:
+                trend_stamp = pickle.load(f)
+            with open(seasonal_pk, 'rb') as f:
+                seasonal_stamp = pickle.load(f)
+            with open(resid_pk, 'rb') as f:
+                resid_stamp = pickle.load(f)
+        else:
+            trend_stamp = []
+            seasonal_stamp = []
+            resid_stamp = []
+            print('decomposing time-series...')
+            for i, df in tqdm(enumerate(data_raw)):
+                # print(len(df))
+                res = STL(df, period = 52*2).fit()
+                
+                trend_stamp.append(res.trend)
+                seasonal_stamp.append(res.seasonal)
+                resid_stamp.append(res.resid)
+            print('done!')
+            with open(trend_pk, 'wb') as f:
+                pickle.dump(trend_stamp, f)
+            with open(seasonal_pk, 'wb') as f:
+                pickle.dump(seasonal_stamp, f)
+            with open(resid_pk, 'wb') as f:
+                pickle.dump(resid_stamp, f)
+        return torch.Tensor(np.stack(trend_stamp)), torch.Tensor(np.stack(seasonal_stamp)), torch.Tensor(np.stack(resid_stamp))
 
     def __read_data__(self):
         self.scaler = StandardScaler()
@@ -524,35 +568,79 @@ class Dataset_Custom(Dataset):
         self.resid_stamp = resid_stamp[border1:border2]
         self.data_stamp = data_stamp
 
+        # data aug stuff
+        if self.aug_path and self.set_type == 0:
+            self.aug = np.load(self.aug_path).squeeze()
+        else:
+            self.aug = None
+        self.ds_len = (len(self.data_x) - self.seq_len - self.pred_len + 1) * self.data_x.shape[-1]
+        self.aug_num = len(self.aug) if self.aug is not None else 0
+        self.aug_len = self.aug.shape[1] if self.aug is not None else 0
+        print(self.aug_len, self.seq_len + self.label_len + self.pred_len)
+        if self.aug_len:
+            assert self.seq_len + self.label_len + self.pred_len <= self.aug_len, (self.seq_len + self.label_len + self.pred_len, self.aug_len)
+        if self.set_type == 0:
+            assert self.aug_len
+        if self.aug_len:
+            self.trend_stamp_aug, self.seasonal_stamp_aug, self.resid_stamp_aug = self.stl_resolve_aug(data_raw=self.aug)
+
     def __getitem__(self, index):
         feat_id = index // self.tot_len
         s_begin = index % self.tot_len
-        
-        s_end = s_begin + self.seq_len
-        r_begin = s_end - self.label_len
-        r_end = r_begin + self.label_len + self.pred_len
-        seq_x = self.data_x[s_begin:s_end, feat_id:feat_id+1]
-        seq_y = self.data_y[r_begin:r_end, feat_id:feat_id+1]
-        seq_trend = self.trend_stamp[s_begin:s_end, feat_id:feat_id+1]
-        seq_seasonal = self.seasonal_stamp[s_begin:s_end, feat_id:feat_id+1]
-        seq_resid = self.resid_stamp[s_begin:s_end, feat_id:feat_id+1]
-        seq_x_mark = self.data_stamp[s_begin:s_end]
-        seq_y_mark = self.data_stamp[r_begin:r_end]
-        # print(">>>>")
-        # print(seq_x.shape)
-        # print('>>>', index, seq_y.shape, r_begin, r_end)
-        # print(seq_x_mark.shape)
-        # print(seq_y_mark.shape)
-        # print(seq_trend.shape)
-        # print(seq_seasonal.shape)
-        # print(seq_resid.shape)
-        # print(">>>>")
+        # print(index, s_begin, self.ds_len, len(self))
+        if index < self.ds_len and (not self.aug_only or self.set_type > 0):        
+            s_end = s_begin + self.seq_len
+            r_begin = s_end - self.label_len
+            r_end = r_begin + self.label_len + self.pred_len
+            seq_x = self.data_x[s_begin:s_end, feat_id:feat_id+1]
+            seq_y = self.data_y[r_begin:r_end, feat_id:feat_id+1]
+            seq_trend = self.trend_stamp[s_begin:s_end, feat_id:feat_id+1]
+            seq_seasonal = self.seasonal_stamp[s_begin:s_end, feat_id:feat_id+1]
+            seq_resid = self.resid_stamp[s_begin:s_end, feat_id:feat_id+1]
+            seq_x_mark = self.data_stamp[s_begin:s_end]
+            seq_y_mark = self.data_stamp[r_begin:r_end]
+            is_aug=False
+        else:
+            if not self.aug_only:
+                index -= self.ds_len
+            total_len = self.seq_len + self.label_len + self.pred_len
+            # print(self.aug, self.set_type)
+            sampled_timeseries = self.aug[index]
+            sampled_trend = self.trend_stamp_aug[index]
+            sampled_seasonal = self.seasonal_stamp_aug[index]
+            sampled_resid = self.resid_stamp_aug[index]
+            s_begin = np.random.randint(low=0,
+                                      high=len(sampled_timeseries) - total_len,
+                                      size=1)[0]
+
+            s_end = s_begin + self.seq_len
+            r_begin = s_end - self.label_len
+            r_end = r_begin + self.label_len + self.pred_len
+
+            seq_x = sampled_timeseries[s_begin:s_end].reshape(-1, 1)
+            seq_y = sampled_timeseries[r_begin:r_end].reshape(-1, 1)
+            
+            seq_trend = sampled_trend[s_begin:s_end].reshape(-1, 1)
+            seq_seasonal = sampled_seasonal[s_begin:s_end].reshape(-1, 1)
+            seq_resid = sampled_resid[s_begin:s_end].reshape(-1, 1)
+            
+            # seq_x_mark = self.data_stamp[s_begin:s_end]
+            # seq_y_mark = self.data_stamp[r_begin:r_end]
+            seq_x_mark = np.zeros((seq_x.shape[0], 4)).squeeze()
+            seq_y_mark = np.zeros((seq_y.shape[0], 4)).squeeze()
+            is_aug=True
+        # if self.set_type == 0:
+        #     print(seq_x.shape, seq_y.shape, seq_x_mark.shape, seq_y_mark.shape, is_aug, index, seq_trend.shape, seq_seasonal.shape, seq_resid.shape)
         return seq_x, seq_y, seq_x_mark, seq_y_mark, seq_trend, seq_seasonal, seq_resid
 
     def __len__(self):
         # return 1000 #(
-        print(len(self.data_x), self.seq_len, self.pred_len+1, self.enc_in)
-        return (len(self.data_x) - self.seq_len - self.pred_len + 1) * self.enc_in
+        # print(len(self.data_x), self.seq_len, self.pred_len+1, self.enc_in)
+        # return (len(self.data_x) - self.seq_len - self.pred_len + 1) * self.enc_in
+        if self.set_type > 0:
+            return self.ds_len
+        else:
+            return (self.ds_len if not self.aug_only else 0) + self.aug_num
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
@@ -843,8 +931,13 @@ class Dataset_TSF(Dataset):
 class Dataset_M4(Dataset):
     def __init__(self, root_path, flag='pred', size=None,
                  features='S', data_path='ETTh1.csv',
+                 aug=None,
+                 aug_only=False,
                  target='OT', scale=False, inverse=False, timeenc=0, freq='15min',
-                 seasonal_patterns='Yearly'):
+                 seasonal_patterns='Yearly',
+                 percent_aug=100):
+        self.aug_path = aug.replace('Weekly', seasonal_patterns)
+        self.aug_only = aug_only
         self.features = features
         self.target = target
         self.scale = scale
@@ -855,6 +948,7 @@ class Dataset_M4(Dataset):
         self.seq_len = size[0]
         self.label_len = size[1]
         self.pred_len = size[2]
+        self.percent_aug = percent_aug
 
         self.seasonal_patterns = seasonal_patterns
         self.history_size = M4Meta.history_size[seasonal_patterns]
@@ -906,7 +1000,7 @@ class Dataset_M4(Dataset):
                 elif self.seasonal_patterns == 'Monthly':
                     period = 12
                 # cols = data_raw.columns
-                print('decomposing time-series...')
+                print('decomposing original time-series...')
                 for i, df in tqdm(enumerate(data_raw)):
                     # print(len(df))
                     res = STL(df, period = period).fit()
@@ -924,19 +1018,88 @@ class Dataset_M4(Dataset):
                 with open(resid_pk, 'wb') as f:
                     pickle.dump(resid_stamp, f)
             return trend_stamp, seasonal_stamp, resid_stamp
+    def stl_resolve_aug(self, data_raw):
+        """
+        STL Global Decomposition
+        """
         
+        save_stl = stl_position + self.data_name + self.seasonal_patterns   
+        # save_stl = 'stl/' + 'weather'   
+
+        self.save_stl = save_stl
+        trend_pk = self.save_stl +  '/trend_aug.pk'
+        seasonal_pk = self.save_stl + '/seasonal_aug.pk'
+        resid_pk = self.save_stl + '/resid_aug.pk'
+        if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
+            with open(trend_pk, 'rb') as f:
+                trend_stamp = pickle.load(f)
+            with open(seasonal_pk, 'rb') as f:
+                seasonal_stamp = pickle.load(f)
+            with open(resid_pk, 'rb') as f:
+                resid_stamp = pickle.load(f)
+        else:
+            trend_stamp = []
+            seasonal_stamp = []
+            resid_stamp = []
+            print('decomposing aug time-series...')
+            if self.seasonal_patterns == 'Yearly':
+                period = 10
+            elif self.seasonal_patterns == 'Quarterly':
+                period = 4
+            elif self.seasonal_patterns == 'Hourly':
+                period = 24
+            elif self.seasonal_patterns == 'Weekly':
+                period = 52
+            elif self.seasonal_patterns == 'Daily':
+                period = 7
+            elif self.seasonal_patterns == 'Monthly':
+                period = 12
+            for i, df in tqdm(enumerate(data_raw)):
+                # print(len(df))
+                res = STL(df, period = period).fit()
+                
+                trend_stamp.append(res.trend)
+                seasonal_stamp.append(res.seasonal)
+                resid_stamp.append(res.resid)
+            print('done!')
+            with open(trend_pk, 'wb') as f:
+                pickle.dump(trend_stamp, f)
+            with open(seasonal_pk, 'wb') as f:
+                pickle.dump(seasonal_stamp, f)
+            with open(resid_pk, 'wb') as f:
+                pickle.dump(resid_stamp, f)
+        return trend_stamp, seasonal_stamp, resid_stamp
+    #torch.Tensor(np.stack(trend_stamp)), torch.Tensor(np.stack(seasonal_stamp)), torch.Tensor(np.stack(resid_stamp))
+    
     def __read_data__(self):
         # M4Dataset.initialize()
         if self.flag == 'train':
             dataset = M4Dataset.load(training=True, dataset_file=self.root_path)
         else:
             dataset = M4Dataset.load(training=False, dataset_file=self.root_path)
+
+       
+
         training_values = np.array(
             [v[~np.isnan(v)] for v in
              dataset.values[dataset.groups == self.seasonal_patterns]])  # split different frequencies
         self.ids = np.array([i for i in dataset.ids[dataset.groups == self.seasonal_patterns]])
         self.timeseries = [ts for ts in training_values]
         self.trend_stamp, self.seasonal_stamp, self.resid_stamp = self.stl_resolve(self.timeseries, 'm4')
+        
+        # data aug stuff
+        if self.aug_path and self.flag == 'train':
+            self.aug = np.load(self.aug_path).squeeze()
+            if self.percent_aug > 0:
+                num_aug = int(self.percent_aug /100) * len(self.aug)
+            else:
+                num_aug = len(self.timeseries)
+            if num_aug < len(self.aug):
+                self.aug = self.aug[np.random.choice(len(self.aug), num_aug, replace=False)]
+            print(f"New dataset size: {len(self.aug)}")
+        else:
+            self.aug = None
+        self.trend_stamp_aug, self.seasonal_stamp_aug, self.resid_stamp_aug = self.stl_resolve_aug(self.aug)
 
     def __getitem__(self, index):
         insample = np.zeros((self.seq_len, 1))
@@ -946,11 +1109,17 @@ class Dataset_M4(Dataset):
         insample_mask = np.zeros((self.seq_len, 1))
         outsample = np.zeros((self.pred_len + self.label_len, 1))
         outsample_mask = np.zeros((self.pred_len + self.label_len, 1))  # m4 dataset
-
-        sampled_timeseries = self.timeseries[index]
-        trend = self.trend_stamp[index]
-        season = self.seasonal_stamp[index]
-        resid = self.resid_stamp[index]
+        if index < len(self.timeseries):
+            sampled_timeseries = self.timeseries[index]
+            trend = self.trend_stamp[index]
+            season = self.seasonal_stamp[index]
+            resid = self.resid_stamp[index]
+        else:
+            index = index - len(self.timeseries)
+            sampled_timeseries = self.aug[index]
+            trend = self.trend_stamp_aug[index]
+            season = self.seasonal_stamp_aug[index]
+            resid = self.resid_stamp_aug[index]
         cut_point = np.random.randint(low=max(1, len(sampled_timeseries) - self.window_sampling_limit),
                                       high=len(sampled_timeseries),
                                       size=1)[0]
@@ -978,7 +1147,7 @@ class Dataset_M4(Dataset):
         return insample, outsample, insample_mask, outsample_mask, trendsample, seasonsample, residsample
 
     def __len__(self):
-        return len(self.timeseries)
+        return len(self.timeseries) + (len(self.aug) if self.aug is not None else 0)
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)

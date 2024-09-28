@@ -10,7 +10,7 @@ d_ff=32
 master_port=00097
 num_process=8
 
-comment='TimeLLM-M4'
+comment='TimeLLM-M4-aug'
 prompt=1
 for season in Weekly; do  #Daily Quarterly Hourly Weekly Monthly Yearly
   python run_m4.py \
@@ -46,7 +46,8 @@ for season in Weekly; do  #Daily Quarterly Hourly Weekly Monthly Yearly
     --patch_size 16 \
     --stride 8 \
     --tmax 20 \
-
+    --aug m4-${season}-train_168_gen_50ksteps_10k.npy \
+    --aug_only 1
 done 
 # --batch_size 256 \
 # --output_dir ./experiments \
