@@ -1090,10 +1090,12 @@ class Dataset_M4(Dataset):
         # data aug stuff
         if self.aug_path and self.flag == 'train':
             self.aug = np.load(self.aug_path).squeeze()
+            print(self.percent_aug, len(self.timeseries))
             if self.percent_aug > 0:
-                num_aug = int(self.percent_aug /100) * len(self.aug)
+                num_aug = int(self.percent_aug /100 * len(self.aug))
             else:
-                num_aug = len(self.timeseries)
+                num_aug = int(- self.percent_aug /100 * len(self.timeseries))
+            print(num_aug)
             if num_aug < len(self.aug):
                 self.aug = self.aug[np.random.choice(len(self.aug), num_aug, replace=False)]
             print(f"New dataset size: {len(self.aug)}")
