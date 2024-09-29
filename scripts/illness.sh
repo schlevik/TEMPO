@@ -20,7 +20,7 @@ traffic_multiplier=1
 
 for percent in 100 
 do
-for pred_len in 24 36 48 60
+for pred_len in 36 # 24 36 48 60
 do
 for tmax in 20
 do
@@ -66,12 +66,13 @@ python main_multi_6domain_release.py \
     --patch_size 16 \
     --stride 8 \
     --gpt_layer $gpt_layer \
-    --itr 3 \
+    --itr 5 \
     --model $model \
     --tmax $tmax \
     --cos 1 \
-    --num_workers 1 \
-    --is_gpt 1 #>> logs/$model/loar_revin_$percent'_'percent'_'$prompt'_'prompt'_'equal'_'$equal/ettm2_pmt1_no_pool_$model'_'$gpt_layer/test'_'$seq_len'_'$pred_len'_lr'$lr.log
+    --is_gpt 1
+    #--num_workers 1 \
+    #--is_gpt 1 #>> logs/$model/loar_revin_$percent'_'percent'_'$prompt'_'prompt'_'equal'_'$equal/ettm2_pmt1_no_pool_$model'_'$gpt_layer/test'_'$seq_len'_'$pred_len'_lr'$lr.log
 
 
 done

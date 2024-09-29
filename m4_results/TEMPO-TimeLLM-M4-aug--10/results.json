@@ -1,0 +1,42 @@
+{
+    "smape": {
+        "Yearly": 13.661,
+        "Quarterly": 10.138,
+        "Monthly": 12.79,
+        "Weekly": 10.978,
+        "Daily": 3.137,
+        "Hourly": 22.675,
+        "Others": 5.318,
+        "Average": 11.98
+    },
+    "mape": {
+        "Yearly": 16.61,
+        "Quarterly": 11.548,
+        "Monthly": 14.807,
+        "Weekly": 10.266,
+        "Daily": 4.669,
+        "Hourly": 38.696,
+        "Others": 7.888,
+        "Average": 14.094
+    },
+    "mase": {
+        "Yearly": 3.124,
+        "Quarterly": 1.188,
+        "Monthly": 0.943,
+        "Weekly": 3.59,
+        "Daily": 3.395,
+        "Hourly": 5.644,
+        "Others": 3.595,
+        "Average": 1.636
+    },
+    "owa": {
+        "Yearly": 0.811,
+        "Quarterly": 0.893,
+        "Monthly": 0.886,
+        "Weekly": 1.245,
+        "Daily": 1.033,
+        "Hourly": 1.795,
+        "Others": 1.126,
+        "Average": 0.869
+    }
+}

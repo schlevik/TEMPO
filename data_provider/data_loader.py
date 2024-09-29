@@ -933,11 +933,14 @@ class Dataset_M4(Dataset):
                  features='S', data_path='ETTh1.csv',
                  aug=None,
                  aug_only=False,
+                 percent_aug=100,
                  target='OT', scale=False, inverse=False, timeenc=0, freq='15min',
                  seasonal_patterns='Yearly',
-                 percent_aug=100):
+                 ):
         self.aug_path = aug.replace('Weekly', seasonal_patterns)
         self.aug_only = aug_only
+        self.percent_aug = percent_aug
+
         self.features = features
         self.target = target
         self.scale = scale
@@ -948,7 +951,6 @@ class Dataset_M4(Dataset):
         self.seq_len = size[0]
         self.label_len = size[1]
         self.pred_len = size[2]
-        self.percent_aug = percent_aug
 
         self.seasonal_patterns = seasonal_patterns
         self.history_size = M4Meta.history_size[seasonal_patterns]
@@ -1027,9 +1029,9 @@ class Dataset_M4(Dataset):
         # save_stl = 'stl/' + 'weather'   
 
         self.save_stl = save_stl
-        trend_pk = self.save_stl +  '/trend_aug.pk'
-        seasonal_pk = self.save_stl + '/seasonal_aug.pk'
-        resid_pk = self.save_stl + '/resid_aug.pk'
+        trend_pk = self.save_stl +   f'/{str(self.percent_aug)}trend_aug.pk'
+        seasonal_pk = self.save_stl + f'/{str(self.percent_aug)}seasonal_aug.pk'
+        resid_pk = self.save_stl +  f'/{str(self.percent_aug)}resid_aug.pk'
         if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
             with open(trend_pk, 'rb') as f:
                 trend_stamp = pickle.load(f)

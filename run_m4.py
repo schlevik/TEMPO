@@ -4,7 +4,7 @@ from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate import DistributedDataParallelKwargs
 from torch import optim
 from torch.optim import lr_scheduler
-
+import json
 from data_provider.m4 import M4Meta
 
 from data_provider.data_factory import data_provider
@@ -427,6 +427,13 @@ for ii in range(args.itr):
             accelerator.print('mape:', mape)
             accelerator.print('mase:', mase)
             accelerator.print('owa:', owa_results)
+            with open(os.path.join(file_path, 'results.json'), 'w+') as f:
+                json.dump({
+                    'smape': smape_results,
+                    'mape': mape,
+                    'mase': mase,
+                    'owa': owa_results
+                }, f)
         else:
             accelerator.print('After all 6 tasks are finished, you can calculate the averaged performance')
 

@@ -11,9 +11,9 @@ master_port=00097
 num_process=8
 
 prompt=1
-for percent_aug in -1; do # 100 75 50 25 10 
+for percent_aug in -100 -50 -25 -10 25 50 100; do # 
 comment="TimeLLM-M4-aug-${percent_aug}"
-  for season in Weekly Daily Quarterly Hourly Monthly Yearly ; do  
+  for season in Monthly Yearly Weekly Daily Quarterly Hourly ; do  # 
     python run_m4.py \
       --task_name short_term_forecast \
       --is_training 1 \
