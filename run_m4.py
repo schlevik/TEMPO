@@ -194,14 +194,14 @@ parser.add_argument('--use_amp', action='store_true', help='use automatic mixed 
 parser.add_argument('--percent', type=int, default=100)
 parser.add_argument('--percent_aug', type=int, default=100)
 parser.add_argument('--aug', type=str, default=None)
-parser.add_argument('--aug_only', type=int, default=1)
+parser.add_argument('--aug_only', type=int, default=0)
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
 # deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs])
 
-folder_path = './m4_results/' + args.model + '-' + args.model_comment + '/'
+folder_path = f'./m4_results{"" if not args.aug_only else "_aug_only"}/' + args.model + '-' + args.model_comment + '/'
 file_path = folder_path
 for ii in range(args.itr):
     # setting record of experiments

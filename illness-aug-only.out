@@ -1,0 +1,588 @@
+logs/TEMPO/loar_revin_100_percent_1_prompt_equal_1/ettm2_pmt1_no_pool_TEMPO_3/test_104_24_lr0.001.log
+Namespace(model_id='illness_TEMPO_3_prompt_learn_104_24_100', checkpoints='./lora_revin_6domain_checkpoints_1/', task_name='long_term_forecast', prompt=1, num_nodes=1, seq_len=104, pred_len=24, label_len=18, decay_fac=0.5, learning_rate=0.001, batch_size=256, num_workers=0, train_epochs=100, lradj='type3', patience=5, gpt_layers=3, is_gpt=1, e_layers=3, d_model=768, n_heads=4, d_ff=768, dropout=0.3, enc_in=1, c_out=1, patch_size=16, kernel_size=25, loss_func='mse', pretrain=1, freeze=1, model='TEMPO', stride=8, max_len=-1, hid_dim=16, tmax=20, itr=1, cos=1, equal=1, pool=False, no_stl_loss=False, stl_weight=0.001, config_path='./configs/multiple_datasets.yml', datasets='ILI', target_data='ILI', use_token=0, electri_multiplier=1, traffic_multiplier=1, embed='timeF', percent_aug=10, aug='ili-clo-0_256_gen_100repeat.npy', aug_only=1)
+['ILI']
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 146
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 146
+val 74
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 146
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 146
+test 170
+trainable params: 154368 || all params: 60796416 || trainable%: 0.25
+Epoch: 1 cost time: 2.9179160594940186
+Epoch: 1, Steps: 27 | Train Loss: 0.6460888 Vali Loss: 0.1244957
+lr = 0.0009938442
+Validation loss decreased (inf --> 0.124496).  Saving model ...
+Epoch: 2 cost time: 2.542161464691162
+Epoch: 2, Steps: 27 | Train Loss: 0.2191623 Vali Loss: 0.1194528
+lr = 0.0009755285
+Validation loss decreased (0.124496 --> 0.119453).  Saving model ...
+Epoch: 3 cost time: 2.6719541549682617
+Epoch: 3, Steps: 27 | Train Loss: 0.1729680 Vali Loss: 0.1111714
+lr = 0.0009455038
+Validation loss decreased (0.119453 --> 0.111171).  Saving model ...
+Epoch: 4 cost time: 2.6224567890167236
+Epoch: 4, Steps: 27 | Train Loss: 0.1608594 Vali Loss: 0.1155281
+lr = 0.0009045095
+EarlyStopping counter: 1 out of 5
+Epoch: 5 cost time: 2.6272225379943848
+Epoch: 5, Steps: 27 | Train Loss: 0.1522896 Vali Loss: 0.1086033
+lr = 0.0008535549
+Validation loss decreased (0.111171 --> 0.108603).  Saving model ...
+Epoch: 6 cost time: 2.6273789405822754
+Epoch: 6, Steps: 27 | Train Loss: 0.1440417 Vali Loss: 0.1090089
+lr = 0.0007938947
+EarlyStopping counter: 1 out of 5
+Epoch: 7 cost time: 2.604456901550293
+Epoch: 7, Steps: 27 | Train Loss: 0.1318129 Vali Loss: 0.1007845
+lr = 0.0007269980
+Validation loss decreased (0.108603 --> 0.100784).  Saving model ...
+Epoch: 8 cost time: 2.836071729660034
+Epoch: 8, Steps: 27 | Train Loss: 0.1258064 Vali Loss: 0.1082188
+lr = 0.0006545120
+EarlyStopping counter: 1 out of 5
+Epoch: 9 cost time: 2.6333963871002197
+Epoch: 9, Steps: 27 | Train Loss: 0.1227982 Vali Loss: 0.1036299
+lr = 0.0005782215
+EarlyStopping counter: 2 out of 5
+Epoch: 10 cost time: 2.640974521636963
+Epoch: 10, Steps: 27 | Train Loss: 0.1183953 Vali Loss: 0.1040385
+lr = 0.0005000050
+EarlyStopping counter: 3 out of 5
+Epoch: 11 cost time: 2.5437445640563965
+Epoch: 11, Steps: 27 | Train Loss: 0.1232511 Vali Loss: 0.0941437
+lr = 0.0004217885
+Validation loss decreased (0.100784 --> 0.094144).  Saving model ...
+Epoch: 12 cost time: 2.6100077629089355
+Epoch: 12, Steps: 27 | Train Loss: 0.1166942 Vali Loss: 0.0921173
+lr = 0.0003454980
+Validation loss decreased (0.094144 --> 0.092117).  Saving model ...
+Epoch: 13 cost time: 2.666619062423706
+Epoch: 13, Steps: 27 | Train Loss: 0.1210412 Vali Loss: 0.0912708
+lr = 0.0002730120
+Validation loss decreased (0.092117 --> 0.091271).  Saving model ...
+Epoch: 14 cost time: 2.746138334274292
+Epoch: 14, Steps: 27 | Train Loss: 0.1198866 Vali Loss: 0.0872736
+lr = 0.0002061153
+Validation loss decreased (0.091271 --> 0.087274).  Saving model ...
+Epoch: 15 cost time: 2.5988495349884033
+Epoch: 15, Steps: 27 | Train Loss: 0.1141398 Vali Loss: 0.0916083
+lr = 0.0001464551
+EarlyStopping counter: 1 out of 5
+Epoch: 16 cost time: 2.641885757446289
+Epoch: 16, Steps: 27 | Train Loss: 0.1115803 Vali Loss: 0.0855878
+lr = 0.0000955005
+Validation loss decreased (0.087274 --> 0.085588).  Saving model ...
+Epoch: 17 cost time: 2.6799559593200684
+Epoch: 17, Steps: 27 | Train Loss: 0.1015387 Vali Loss: 0.0913448
+lr = 0.0000545062
+EarlyStopping counter: 1 out of 5
+Epoch: 18 cost time: 2.618438482284546
+Epoch: 18, Steps: 27 | Train Loss: 0.1001890 Vali Loss: 0.0884284
+lr = 0.0000244815
+EarlyStopping counter: 2 out of 5
+Epoch: 19 cost time: 2.599524974822998
+Epoch: 19, Steps: 27 | Train Loss: 0.1037381 Vali Loss: 0.0863518
+lr = 0.0000061658
+EarlyStopping counter: 3 out of 5
+Epoch: 20 cost time: 2.643173933029175
+Epoch: 20, Steps: 27 | Train Loss: 0.1005102 Vali Loss: 0.0851839
+lr = 0.0000000100
+Validation loss decreased (0.085588 --> 0.085184).  Saving model ...
+Epoch: 21 cost time: 2.574127435684204
+Epoch: 21, Steps: 27 | Train Loss: 0.1006808 Vali Loss: 0.0892674
+lr = 0.0000061658
+EarlyStopping counter: 1 out of 5
+Epoch: 22 cost time: 2.6495182514190674
+Epoch: 22, Steps: 27 | Train Loss: 0.1050934 Vali Loss: 0.0846999
+lr = 0.0000244815
+Validation loss decreased (0.085184 --> 0.084700).  Saving model ...
+Epoch: 23 cost time: 2.6866400241851807
+Epoch: 23, Steps: 27 | Train Loss: 0.1063519 Vali Loss: 0.0866572
+lr = 0.0000545062
+EarlyStopping counter: 1 out of 5
+Epoch: 24 cost time: 2.6008734703063965
+Epoch: 24, Steps: 27 | Train Loss: 0.1069127 Vali Loss: 0.0848118
+lr = 0.0000955005
+EarlyStopping counter: 2 out of 5
+Epoch: 25 cost time: 2.630836009979248
+Epoch: 25, Steps: 27 | Train Loss: 0.1084640 Vali Loss: 0.0843088
+lr = 0.0001464551
+Validation loss decreased (0.084700 --> 0.084309).  Saving model ...
+Epoch: 26 cost time: 2.6331796646118164
+Epoch: 26, Steps: 27 | Train Loss: 0.1021768 Vali Loss: 0.0835787
+lr = 0.0002061153
+Validation loss decreased (0.084309 --> 0.083579).  Saving model ...
+Epoch: 27 cost time: 2.6020214557647705
+Epoch: 27, Steps: 27 | Train Loss: 0.1040401 Vali Loss: 0.0872145
+lr = 0.0002730120
+EarlyStopping counter: 1 out of 5
+Epoch: 28 cost time: 2.616478443145752
+Epoch: 28, Steps: 27 | Train Loss: 0.1086850 Vali Loss: 0.0906802
+lr = 0.0003454980
+EarlyStopping counter: 2 out of 5
+Epoch: 29 cost time: 2.6355559825897217
+Epoch: 29, Steps: 27 | Train Loss: 0.1056791 Vali Loss: 0.0819585
+lr = 0.0004217885
+Validation loss decreased (0.083579 --> 0.081959).  Saving model ...
+Epoch: 30 cost time: 2.6544315814971924
+Epoch: 30, Steps: 27 | Train Loss: 0.1128936 Vali Loss: 0.0842425
+lr = 0.0005000050
+EarlyStopping counter: 1 out of 5
+Epoch: 31 cost time: 2.731088161468506
+Epoch: 31, Steps: 27 | Train Loss: 0.1123529 Vali Loss: 0.0843642
+lr = 0.0005782215
+EarlyStopping counter: 2 out of 5
+Epoch: 32 cost time: 2.6234891414642334
+Epoch: 32, Steps: 27 | Train Loss: 0.1120511 Vali Loss: 0.0819001
+lr = 0.0006545120
+Validation loss decreased (0.081959 --> 0.081900).  Saving model ...
+Epoch: 33 cost time: 2.586111307144165
+Epoch: 33, Steps: 27 | Train Loss: 0.1114193 Vali Loss: 0.0901449
+lr = 0.0007269980
+EarlyStopping counter: 1 out of 5
+Epoch: 34 cost time: 2.644744396209717
+Epoch: 34, Steps: 27 | Train Loss: 0.1177706 Vali Loss: 0.0876962
+lr = 0.0007938947
+EarlyStopping counter: 2 out of 5
+Epoch: 35 cost time: 2.539565086364746
+Epoch: 35, Steps: 27 | Train Loss: 0.1229072 Vali Loss: 0.0870631
+lr = 0.0008535549
+EarlyStopping counter: 3 out of 5
+Epoch: 36 cost time: 2.5561721324920654
+Epoch: 36, Steps: 27 | Train Loss: 0.1231157 Vali Loss: 0.0821621
+lr = 0.0009045095
+EarlyStopping counter: 4 out of 5
+Epoch: 37 cost time: 2.5740981101989746
+Epoch: 37, Steps: 27 | Train Loss: 0.1151564 Vali Loss: 0.0947034
+lr = 0.0009455038
+EarlyStopping counter: 5 out of 5
+Early stopping
+------------------------------------
+Average MAE: 0.87353515625
+Average MSE: 1.005859375
+test on the ILI dataset: mse:1.005859375 mae:0.87353515625
+mse_mean = 1.0059, mse_std = 0.0000
+mae_mean = 0.8735, mae_std = 0.0000
+logs/TEMPO/loar_revin_100_percent_1_prompt_equal_1/ettm2_pmt1_no_pool_TEMPO_3/test_104_36_lr0.001.log
+Namespace(model_id='illness_TEMPO_3_prompt_learn_104_36_100', checkpoints='./lora_revin_6domain_checkpoints_1/', task_name='long_term_forecast', prompt=1, num_nodes=1, seq_len=104, pred_len=36, label_len=18, decay_fac=0.5, learning_rate=0.001, batch_size=256, num_workers=0, train_epochs=100, lradj='type3', patience=5, gpt_layers=3, is_gpt=1, e_layers=3, d_model=768, n_heads=4, d_ff=768, dropout=0.3, enc_in=1, c_out=1, patch_size=16, kernel_size=25, loss_func='mse', pretrain=1, freeze=1, model='TEMPO', stride=8, max_len=-1, hid_dim=16, tmax=20, itr=1, cos=1, equal=1, pool=False, no_stl_loss=False, stl_weight=0.001, config_path='./configs/multiple_datasets.yml', datasets='ILI', target_data='ILI', use_token=0, electri_multiplier=1, traffic_multiplier=1, embed='timeF', percent_aug=10, aug='ili-clo-0_256_gen_100repeat.npy', aug_only=1)
+['ILI']
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 158
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 158
+val 62
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 158
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 158
+test 158
+trainable params: 154368 || all params: 60796416 || trainable%: 0.25
+Epoch: 1 cost time: 2.920034170150757
+Epoch: 1, Steps: 27 | Train Loss: 0.8520978 Vali Loss: 0.1820203
+lr = 0.0009938442
+Validation loss decreased (inf --> 0.182020).  Saving model ...
+Epoch: 2 cost time: 2.6502552032470703
+Epoch: 2, Steps: 27 | Train Loss: 0.2050843 Vali Loss: 0.1428299
+lr = 0.0009755285
+Validation loss decreased (0.182020 --> 0.142830).  Saving model ...
+Epoch: 3 cost time: 2.6878304481506348
+Epoch: 3, Steps: 27 | Train Loss: 0.1729121 Vali Loss: 0.1420064
+lr = 0.0009455038
+Validation loss decreased (0.142830 --> 0.142006).  Saving model ...
+Epoch: 4 cost time: 2.617380380630493
+Epoch: 4, Steps: 27 | Train Loss: 0.1638965 Vali Loss: 0.1305418
+lr = 0.0009045095
+Validation loss decreased (0.142006 --> 0.130542).  Saving model ...
+Epoch: 5 cost time: 2.6806042194366455
+Epoch: 5, Steps: 27 | Train Loss: 0.1547873 Vali Loss: 0.1199217
+lr = 0.0008535549
+Validation loss decreased (0.130542 --> 0.119922).  Saving model ...
+Epoch: 6 cost time: 2.59421968460083
+Epoch: 6, Steps: 27 | Train Loss: 0.1480056 Vali Loss: 0.1221453
+lr = 0.0007938947
+EarlyStopping counter: 1 out of 5
+Epoch: 7 cost time: 2.6145503520965576
+Epoch: 7, Steps: 27 | Train Loss: 0.1440636 Vali Loss: 0.1203007
+lr = 0.0007269980
+EarlyStopping counter: 2 out of 5
+Epoch: 8 cost time: 2.815746545791626
+Epoch: 8, Steps: 27 | Train Loss: 0.1393714 Vali Loss: 0.1189269
+lr = 0.0006545120
+Validation loss decreased (0.119922 --> 0.118927).  Saving model ...
+Epoch: 9 cost time: 2.5109915733337402
+Epoch: 9, Steps: 27 | Train Loss: 0.1373514 Vali Loss: 0.1151176
+lr = 0.0005782215
+Validation loss decreased (0.118927 --> 0.115118).  Saving model ...
+Epoch: 10 cost time: 2.6423606872558594
+Epoch: 10, Steps: 27 | Train Loss: 0.1319233 Vali Loss: 0.1078505
+lr = 0.0005000050
+Validation loss decreased (0.115118 --> 0.107850).  Saving model ...
+Epoch: 11 cost time: 2.583709955215454
+Epoch: 11, Steps: 27 | Train Loss: 0.1321454 Vali Loss: 0.1103958
+lr = 0.0004217885
+EarlyStopping counter: 1 out of 5
+Epoch: 12 cost time: 2.6623876094818115
+Epoch: 12, Steps: 27 | Train Loss: 0.1255112 Vali Loss: 0.1049632
+lr = 0.0003454980
+Validation loss decreased (0.107850 --> 0.104963).  Saving model ...
+Epoch: 13 cost time: 2.6463444232940674
+Epoch: 13, Steps: 27 | Train Loss: 0.1231747 Vali Loss: 0.1083906
+lr = 0.0002730120
+EarlyStopping counter: 1 out of 5
+Epoch: 14 cost time: 2.5553033351898193
+Epoch: 14, Steps: 27 | Train Loss: 0.1245142 Vali Loss: 0.1048352
+lr = 0.0002061153
+Validation loss decreased (0.104963 --> 0.104835).  Saving model ...
+Epoch: 15 cost time: 2.6598703861236572
+Epoch: 15, Steps: 27 | Train Loss: 0.1189699 Vali Loss: 0.1035373
+lr = 0.0001464551
+Validation loss decreased (0.104835 --> 0.103537).  Saving model ...
+Epoch: 16 cost time: 2.620386838912964
+Epoch: 16, Steps: 27 | Train Loss: 0.1119517 Vali Loss: 0.1059509
+lr = 0.0000955005
+EarlyStopping counter: 1 out of 5
+Epoch: 17 cost time: 2.6494085788726807
+Epoch: 17, Steps: 27 | Train Loss: 0.1180206 Vali Loss: 0.1012518
+lr = 0.0000545062
+Validation loss decreased (0.103537 --> 0.101252).  Saving model ...
+Epoch: 18 cost time: 2.7534098625183105
+Epoch: 18, Steps: 27 | Train Loss: 0.1163637 Vali Loss: 0.1029535
+lr = 0.0000244815
+EarlyStopping counter: 1 out of 5
+Epoch: 19 cost time: 2.571254253387451
+Epoch: 19, Steps: 27 | Train Loss: 0.1143317 Vali Loss: 0.1003713
+lr = 0.0000061658
+Validation loss decreased (0.101252 --> 0.100371).  Saving model ...
+Epoch: 20 cost time: 2.613293170928955
+Epoch: 20, Steps: 27 | Train Loss: 0.1234222 Vali Loss: 0.1029628
+lr = 0.0000000100
+EarlyStopping counter: 1 out of 5
+Epoch: 21 cost time: 2.616267681121826
+Epoch: 21, Steps: 27 | Train Loss: 0.1157275 Vali Loss: 0.1007111
+lr = 0.0000061658
+EarlyStopping counter: 2 out of 5
+Epoch: 22 cost time: 2.6173343658447266
+Epoch: 22, Steps: 27 | Train Loss: 0.1152152 Vali Loss: 0.1016577
+lr = 0.0000244815
+EarlyStopping counter: 3 out of 5
+Epoch: 23 cost time: 2.612863779067993
+Epoch: 23, Steps: 27 | Train Loss: 0.1144673 Vali Loss: 0.0983623
+lr = 0.0000545062
+Validation loss decreased (0.100371 --> 0.098362).  Saving model ...
+Epoch: 24 cost time: 2.5429129600524902
+Epoch: 24, Steps: 27 | Train Loss: 0.1129784 Vali Loss: 0.1033720
+lr = 0.0000955005
+EarlyStopping counter: 1 out of 5
+Epoch: 25 cost time: 2.6090471744537354
+Epoch: 25, Steps: 27 | Train Loss: 0.1175012 Vali Loss: 0.1033650
+lr = 0.0001464551
+EarlyStopping counter: 2 out of 5
+Epoch: 26 cost time: 2.5925488471984863
+Epoch: 26, Steps: 27 | Train Loss: 0.1169710 Vali Loss: 0.0989934
+lr = 0.0002061153
+EarlyStopping counter: 3 out of 5
+Epoch: 27 cost time: 2.5573272705078125
+Epoch: 27, Steps: 27 | Train Loss: 0.1222923 Vali Loss: 0.0999964
+lr = 0.0002730120
+EarlyStopping counter: 4 out of 5
+Epoch: 28 cost time: 2.6358892917633057
+Epoch: 28, Steps: 27 | Train Loss: 0.1177548 Vali Loss: 0.1118153
+lr = 0.0003454980
+EarlyStopping counter: 5 out of 5
+Early stopping
+------------------------------------
+Average MAE: 0.99267578125
+Average MSE: 1.2265625
+test on the ILI dataset: mse:1.2265625 mae:0.99267578125
+mse_mean = 1.2266, mse_std = 0.0000
+mae_mean = 0.9927, mae_std = 0.0000
+logs/TEMPO/loar_revin_100_percent_1_prompt_equal_1/ettm2_pmt1_no_pool_TEMPO_3/test_104_48_lr0.001.log
+Namespace(model_id='illness_TEMPO_3_prompt_learn_104_48_100', checkpoints='./lora_revin_6domain_checkpoints_1/', task_name='long_term_forecast', prompt=1, num_nodes=1, seq_len=104, pred_len=48, label_len=18, decay_fac=0.5, learning_rate=0.001, batch_size=256, num_workers=0, train_epochs=100, lradj='type3', patience=5, gpt_layers=3, is_gpt=1, e_layers=3, d_model=768, n_heads=4, d_ff=768, dropout=0.3, enc_in=1, c_out=1, patch_size=16, kernel_size=25, loss_func='mse', pretrain=1, freeze=1, model='TEMPO', stride=8, max_len=-1, hid_dim=16, tmax=20, itr=1, cos=1, equal=1, pool=False, no_stl_loss=False, stl_weight=0.001, config_path='./configs/multiple_datasets.yml', datasets='ILI', target_data='ILI', use_token=0, electri_multiplier=1, traffic_multiplier=1, embed='timeF', percent_aug=10, aug='ili-clo-0_256_gen_100repeat.npy', aug_only=1)
+['ILI']
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 170
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 170
+val 50
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 170
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 170
+test 146
+trainable params: 154368 || all params: 60796416 || trainable%: 0.25
+Epoch: 1 cost time: 2.930363178253174
+Epoch: 1, Steps: 27 | Train Loss: 0.7634648 Vali Loss: 0.1683406
+lr = 0.0009938442
+Validation loss decreased (inf --> 0.168341).  Saving model ...
+Epoch: 2 cost time: 2.6466243267059326
+Epoch: 2, Steps: 27 | Train Loss: 0.1995723 Vali Loss: 0.1437731
+lr = 0.0009755285
+Validation loss decreased (0.168341 --> 0.143773).  Saving model ...
+Epoch: 3 cost time: 2.6702382564544678
+Epoch: 3, Steps: 27 | Train Loss: 0.1688455 Vali Loss: 0.1446465
+lr = 0.0009455038
+EarlyStopping counter: 1 out of 5
+Epoch: 4 cost time: 2.6413791179656982
+Epoch: 4, Steps: 27 | Train Loss: 0.1596822 Vali Loss: 0.1343713
+lr = 0.0009045095
+Validation loss decreased (0.143773 --> 0.134371).  Saving model ...
+Epoch: 5 cost time: 2.5431244373321533
+Epoch: 5, Steps: 27 | Train Loss: 0.1472573 Vali Loss: 0.1409098
+lr = 0.0008535549
+EarlyStopping counter: 1 out of 5
+Epoch: 6 cost time: 2.647840738296509
+Epoch: 6, Steps: 27 | Train Loss: 0.1491157 Vali Loss: 0.1399576
+lr = 0.0007938947
+EarlyStopping counter: 2 out of 5
+Epoch: 7 cost time: 2.6597506999969482
+Epoch: 7, Steps: 27 | Train Loss: 0.1363532 Vali Loss: 0.1382873
+lr = 0.0007269980
+EarlyStopping counter: 3 out of 5
+Epoch: 8 cost time: 2.8858413696289062
+Epoch: 8, Steps: 27 | Train Loss: 0.1326383 Vali Loss: 0.1348851
+lr = 0.0006545120
+EarlyStopping counter: 4 out of 5
+Epoch: 9 cost time: 2.6194136142730713
+Epoch: 9, Steps: 27 | Train Loss: 0.1298656 Vali Loss: 0.1285075
+lr = 0.0005782215
+Validation loss decreased (0.134371 --> 0.128507).  Saving model ...
+Epoch: 10 cost time: 2.7056238651275635
+Epoch: 10, Steps: 27 | Train Loss: 0.1287228 Vali Loss: 0.1315096
+lr = 0.0005000050
+EarlyStopping counter: 1 out of 5
+Epoch: 11 cost time: 2.624105215072632
+Epoch: 11, Steps: 27 | Train Loss: 0.1243155 Vali Loss: 0.1192598
+lr = 0.0004217885
+Validation loss decreased (0.128507 --> 0.119260).  Saving model ...
+Epoch: 12 cost time: 2.580890417098999
+Epoch: 12, Steps: 27 | Train Loss: 0.1213418 Vali Loss: 0.1159019
+lr = 0.0003454980
+Validation loss decreased (0.119260 --> 0.115902).  Saving model ...
+Epoch: 13 cost time: 2.5766828060150146
+Epoch: 13, Steps: 27 | Train Loss: 0.1219288 Vali Loss: 0.1198862
+lr = 0.0002730120
+EarlyStopping counter: 1 out of 5
+Epoch: 14 cost time: 2.6686229705810547
+Epoch: 14, Steps: 27 | Train Loss: 0.1200984 Vali Loss: 0.1222771
+lr = 0.0002061153
+EarlyStopping counter: 2 out of 5
+Epoch: 15 cost time: 2.6619064807891846
+Epoch: 15, Steps: 27 | Train Loss: 0.1181494 Vali Loss: 0.1209677
+lr = 0.0001464551
+EarlyStopping counter: 3 out of 5
+Epoch: 16 cost time: 2.6101109981536865
+Epoch: 16, Steps: 27 | Train Loss: 0.1137415 Vali Loss: 0.1206856
+lr = 0.0000955005
+EarlyStopping counter: 4 out of 5
+Epoch: 17 cost time: 2.631742477416992
+Epoch: 17, Steps: 27 | Train Loss: 0.1153004 Vali Loss: 0.1159848
+lr = 0.0000545062
+EarlyStopping counter: 5 out of 5
+Early stopping
+------------------------------------
+Average MAE: 1.083984375
+Average MSE: 1.4404296875
+test on the ILI dataset: mse:1.4404296875 mae:1.083984375
+mse_mean = 1.4404, mse_std = 0.0000
+mae_mean = 1.0840, mae_std = 0.0000
+logs/TEMPO/loar_revin_100_percent_1_prompt_equal_1/ettm2_pmt1_no_pool_TEMPO_3/test_104_60_lr0.001.log
+Namespace(model_id='illness_TEMPO_3_prompt_learn_104_60_100', checkpoints='./lora_revin_6domain_checkpoints_1/', task_name='long_term_forecast', prompt=1, num_nodes=1, seq_len=104, pred_len=60, label_len=18, decay_fac=0.5, learning_rate=0.001, batch_size=256, num_workers=0, train_epochs=100, lradj='type3', patience=5, gpt_layers=3, is_gpt=1, e_layers=3, d_model=768, n_heads=4, d_ff=768, dropout=0.3, enc_in=1, c_out=1, patch_size=16, kernel_size=25, loss_func='mse', pretrain=1, freeze=1, model='TEMPO', stride=8, max_len=-1, hid_dim=16, tmax=20, itr=1, cos=1, equal=1, pool=False, no_stl_loss=False, stl_weight=0.001, config_path='./configs/multiple_datasets.yml', datasets='ILI', target_data='ILI', use_token=0, electri_multiplier=1, traffic_multiplier=1, embed='timeF', percent_aug=10, aug='ili-clo-0_256_gen_100repeat.npy', aug_only=1)
+['ILI']
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 182
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 182
+val 38
+ILI
+dataset:  custom
+Data aug...
+7 aug DS found.
+Shape should be: (70000, 256)
+(70000, 256) aug data
+sample 10 % (7000) from 70000
+7000 new ds
+256 182
+decomposing time-series...
+done!
+train 7000
+Data aug...
+0 182
+test 134
+trainable params: 154368 || all params: 60796416 || trainable%: 0.25
+Epoch: 1 cost time: 2.8513336181640625
+Epoch: 1, Steps: 27 | Train Loss: 0.6066420 Vali Loss: 0.1613722
+lr = 0.0009938442
+Validation loss decreased (inf --> 0.161372).  Saving model ...
+Epoch: 2 cost time: 2.633824586868286
+Epoch: 2, Steps: 27 | Train Loss: 0.1920532 Vali Loss: 0.1547050
+lr = 0.0009755285
+Validation loss decreased (0.161372 --> 0.154705).  Saving model ...
+Epoch: 3 cost time: 2.6263134479522705
+Epoch: 3, Steps: 27 | Train Loss: 0.1683888 Vali Loss: 0.1580159
+lr = 0.0009455038
+EarlyStopping counter: 1 out of 5
+Epoch: 4 cost time: 2.687854290008545
+Epoch: 4, Steps: 27 | Train Loss: 0.1585421 Vali Loss: 0.1576378
+lr = 0.0009045095
+EarlyStopping counter: 2 out of 5
+Epoch: 5 cost time: 2.5496420860290527
+Epoch: 5, Steps: 27 | Train Loss: 0.1447269 Vali Loss: 0.1405030
+lr = 0.0008535549
+Validation loss decreased (0.154705 --> 0.140503).  Saving model ...
+Epoch: 6 cost time: 2.633890151977539
+Epoch: 6, Steps: 27 | Train Loss: 0.1406705 Vali Loss: 0.1353615
+lr = 0.0007938947
+Validation loss decreased (0.140503 --> 0.135361).  Saving model ...
+Epoch: 7 cost time: 2.745311975479126
+Epoch: 7, Steps: 27 | Train Loss: 0.1364105 Vali Loss: 0.1345361
+lr = 0.0007269980
+Validation loss decreased (0.135361 --> 0.134536).  Saving model ...
+Epoch: 8 cost time: 2.8514363765716553
+Epoch: 8, Steps: 27 | Train Loss: 0.1345261 Vali Loss: 0.1278248
+lr = 0.0006545120
+Validation loss decreased (0.134536 --> 0.127825).  Saving model ...
+Epoch: 9 cost time: 2.6286537647247314
+Epoch: 9, Steps: 27 | Train Loss: 0.1362935 Vali Loss: 0.1239780
+lr = 0.0005782215
+Validation loss decreased (0.127825 --> 0.123978).  Saving model ...
+Epoch: 10 cost time: 2.668780565261841
+Epoch: 10, Steps: 27 | Train Loss: 0.1330197 Vali Loss: 0.1369389
+lr = 0.0005000050
+EarlyStopping counter: 1 out of 5
+Epoch: 11 cost time: 2.611876964569092
+Epoch: 11, Steps: 27 | Train Loss: 0.1222283 Vali Loss: 0.1203412
+lr = 0.0004217885
+Validation loss decreased (0.123978 --> 0.120341).  Saving model ...
+Epoch: 12 cost time: 2.6415305137634277
+Epoch: 12, Steps: 27 | Train Loss: 0.1213986 Vali Loss: 0.1160513
+lr = 0.0003454980
+Validation loss decreased (0.120341 --> 0.116051).  Saving model ...
+Epoch: 13 cost time: 2.65010666847229
+Epoch: 13, Steps: 27 | Train Loss: 0.1161001 Vali Loss: 0.1150667
+lr = 0.0002730120
+Validation loss decreased (0.116051 --> 0.115067).  Saving model ...
+Epoch: 14 cost time: 2.7000644207000732
+Epoch: 14, Steps: 27 | Train Loss: 0.1125438 Vali Loss: 0.1250296
+lr = 0.0002061153
+EarlyStopping counter: 1 out of 5
+Epoch: 15 cost time: 2.6834683418273926
+Epoch: 15, Steps: 27 | Train Loss: 0.1165858 Vali Loss: 0.1171633
+lr = 0.0001464551
+EarlyStopping counter: 2 out of 5
+Epoch: 16 cost time: 2.5652015209198
+Epoch: 16, Steps: 27 | Train Loss: 0.1108630 Vali Loss: 0.1104993
+lr = 0.0000955005
+Validation loss decreased (0.115067 --> 0.110499).  Saving model ...
+Epoch: 17 cost time: 2.5743274688720703
+Epoch: 17, Steps: 27 | Train Loss: 0.1072805 Vali Loss: 0.1119770
+lr = 0.0000545062
+EarlyStopping counter: 1 out of 5
+Epoch: 18 cost time: 2.580186605453491
+Epoch: 18, Steps: 27 | Train Loss: 0.1110414 Vali Loss: 0.1120544
+lr = 0.0000244815
+EarlyStopping counter: 2 out of 5
+Epoch: 19 cost time: 2.61393404006958
+Epoch: 19, Steps: 27 | Train Loss: 0.1116186 Vali Loss: 0.1093172
+lr = 0.0000061658
+Validation loss decreased (0.110499 --> 0.109317).  Saving model ...
+Epoch: 20 cost time: 2.491037368774414
+Epoch: 20, Steps: 27 | Train Loss: 0.1085966 Vali Loss: 0.1114300
+lr = 0.0000000100
+EarlyStopping counter: 1 out of 5
+Epoch: 21 cost time: 2.5034842491149902
+Epoch: 21, Steps: 27 | Train Loss: 0.1071123 Vali Loss: 0.1103531
+lr = 0.0000061658
+EarlyStopping counter: 2 out of 5
+Epoch: 22 cost time: 2.4968302249908447
+Epoch: 22, Steps: 27 | Train Loss: 0.1100206 Vali Loss: 0.1135185
+lr = 0.0000244815
+EarlyStopping counter: 3 out of 5
+Epoch: 23 cost time: 2.6467721462249756
+Epoch: 23, Steps: 27 | Train Loss: 0.1091973 Vali Loss: 0.1123103
+lr = 0.0000545062
+EarlyStopping counter: 4 out of 5
+Epoch: 24 cost time: 2.6634743213653564
+Epoch: 24, Steps: 27 | Train Loss: 0.1141388 Vali Loss: 0.1111094
+lr = 0.0000955005
+EarlyStopping counter: 5 out of 5
+Early stopping
+------------------------------------
+Average MAE: 1.1435546875
+Average MSE: 1.5986328125
+test on the ILI dataset: mse:1.5986328125 mae:1.1435546875
+mse_mean = 1.5986, mse_std = 0.0000
+mae_mean = 1.1436, mae_std = 0.0000

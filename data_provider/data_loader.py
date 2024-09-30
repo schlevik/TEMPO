@@ -486,7 +486,7 @@ class Dataset_Custom(Dataset):
         trend_stamp = []
         seasonal_stamp = []
         resid_stamp = []
-        print('decomposing time-series...')
+        print('decomposing aug time-series...')
         for i, df in tqdm(enumerate(data_raw)):
             # print(len(df))
             res = STL(df, period = 52*2).fit()
@@ -1086,44 +1086,44 @@ class Dataset_M4(Dataset):
         trend_pk = self.save_stl +   f'/{str(self.percent_aug)}trend_aug.pk'
         seasonal_pk = self.save_stl + f'/{str(self.percent_aug)}seasonal_aug.pk'
         resid_pk = self.save_stl +  f'/{str(self.percent_aug)}resid_aug.pk'
-        if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
-            with open(trend_pk, 'rb') as f:
-                trend_stamp = pickle.load(f)
-            with open(seasonal_pk, 'rb') as f:
-                seasonal_stamp = pickle.load(f)
-            with open(resid_pk, 'rb') as f:
-                resid_stamp = pickle.load(f)
-        else:
-            trend_stamp = []
-            seasonal_stamp = []
-            resid_stamp = []
-            print('decomposing aug time-series...')
-            if self.seasonal_patterns == 'Yearly':
-                period = 10
-            elif self.seasonal_patterns == 'Quarterly':
-                period = 4
-            elif self.seasonal_patterns == 'Hourly':
-                period = 24
-            elif self.seasonal_patterns == 'Weekly':
-                period = 52
-            elif self.seasonal_patterns == 'Daily':
-                period = 7
-            elif self.seasonal_patterns == 'Monthly':
-                period = 12
-            for i, df in tqdm(enumerate(data_raw)):
-                # print(len(df))
-                res = STL(df, period = period).fit()
-                
-                trend_stamp.append(res.trend)
-                seasonal_stamp.append(res.seasonal)
-                resid_stamp.append(res.resid)
-            print('done!')
-            with open(trend_pk, 'wb') as f:
-                pickle.dump(trend_stamp, f)
-            with open(seasonal_pk, 'wb') as f:
-                pickle.dump(seasonal_stamp, f)
-            with open(resid_pk, 'wb') as f:
-                pickle.dump(resid_stamp, f)
+        # if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
+        #     with open(trend_pk, 'rb') as f:
+        #         trend_stamp = pickle.load(f)
+        #     with open(seasonal_pk, 'rb') as f:
+        #         seasonal_stamp = pickle.load(f)
+        #     with open(resid_pk, 'rb') as f:
+        #         resid_stamp = pickle.load(f)
+        # else:
+        trend_stamp = []
+        seasonal_stamp = []
+        resid_stamp = []
+        print('decomposing aug time-series...')
+        if self.seasonal_patterns == 'Yearly':
+            period = 10
+        elif self.seasonal_patterns == 'Quarterly':
+            period = 4
+        elif self.seasonal_patterns == 'Hourly':
+            period = 24
+        elif self.seasonal_patterns == 'Weekly':
+            period = 52
+        elif self.seasonal_patterns == 'Daily':
+            period = 7
+        elif self.seasonal_patterns == 'Monthly':
+            period = 12
+        for i, df in tqdm(enumerate(data_raw)):
+            # print(len(df))
+            res = STL(df, period = period).fit()
+            
+            trend_stamp.append(res.trend)
+            seasonal_stamp.append(res.seasonal)
+            resid_stamp.append(res.resid)
+        print('done!')
+        # with open(trend_pk, 'wb') as f:
+        #     pickle.dump(trend_stamp, f)
+        # with open(seasonal_pk, 'wb') as f:
+        #     pickle.dump(seasonal_stamp, f)
+        # with open(resid_pk, 'wb') as f:
+        #     pickle.dump(resid_stamp, f)
         return trend_stamp, seasonal_stamp, resid_stamp
     #torch.Tensor(np.stack(trend_stamp)), torch.Tensor(np.stack(seasonal_stamp)), torch.Tensor(np.stack(resid_stamp))
     
@@ -1157,7 +1157,11 @@ class Dataset_M4(Dataset):
             print(f"New dataset size: {len(self.aug)}")
         else:
             self.aug = None
-        self.trend_stamp_aug, self.seasonal_stamp_aug, self.resid_stamp_aug = self.stl_resolve_aug(self.aug)
+            
+        self.ds_len = len(self.timeseries)
+        self.aug_num = len(self.aug) if self.aug is not None else 0
+        if self.aug is not None:
+            self.trend_stamp_aug, self.seasonal_stamp_aug, self.resid_stamp_aug = self.stl_resolve_aug(self.aug)
 
     def __getitem__(self, index):
         insample = np.zeros((self.seq_len, 1))
@@ -1205,7 +1209,10 @@ class Dataset_M4(Dataset):
         return insample, outsample, insample_mask, outsample_mask, trendsample, seasonsample, residsample
 
     def __len__(self):
-        return len(self.timeseries) + (len(self.aug) if self.aug is not None else 0)
+        if self.flag != 'train':
+            return self.ds_len
+        else:
+            return (self.ds_len if not self.aug_only else 0) + self.aug_num
 
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)

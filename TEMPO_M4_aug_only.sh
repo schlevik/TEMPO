@@ -1,3 +1,4 @@
+
 model_name=TEMPO
 
 train_epochs=50
@@ -12,7 +13,7 @@ num_process=8
 
 comment='TimeLLM-M4-aug'
 prompt=1
-for season in Weekly; do  #Daily Quarterly Hourly Weekly Monthly Yearly
+for season in Daily Quarterly Hourly Weekly Monthly Yearly; do  #
   python run_m4.py \
     --task_name short_term_forecast \
     --is_training 1 \
@@ -47,7 +48,8 @@ for season in Weekly; do  #Daily Quarterly Hourly Weekly Monthly Yearly
     --stride 8 \
     --tmax 20 \
     --aug m4-${season}-train_168_gen_50ksteps_10k.npy \
-    --aug_only 1
+    --aug_only 1 \
+    --percent_aug 100
 done 
 # --batch_size 256 \
 # --output_dir ./experiments \
