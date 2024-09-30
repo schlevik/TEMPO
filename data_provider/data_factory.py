@@ -53,6 +53,25 @@ def data_provider(args, flag, drop_last_test=True, train_all=False):
             aug=args.aug,
             percent_aug=args.percent_aug
         )
+    elif args.aug:
+        print("Data aug...")
+        data_set = Data(
+            root_path=args.root_path,
+            data_path=args.data_path,
+            flag=flag,
+            size=[args.seq_len, args.label_len, args.pred_len],
+            features=args.features,
+            target=args.target,
+            timeenc=timeenc,
+            freq=freq,
+            percent=percent,
+            max_len=max_len,
+            train_all=train_all,
+            data_name = args.data_name,
+            percent_aug=args.percent_aug,
+            aug=args.aug,
+            aug_only=args.aug_only
+        )
     else:
         data_set = Data(
             root_path=args.root_path,

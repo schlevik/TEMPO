@@ -1,3 +1,4 @@
+import glob
 import os
 import numpy as np
 import pandas as pd
@@ -361,8 +362,8 @@ class Dataset_Custom(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
                  aug='national_illness_168_gen_50ksteps_10k.npy',
-                 aug_only=False,
-                 target='OT', scale=False, timeenc=0, freq='h',
+                 aug_only=False, percent_aug=100,
+                 target='OT', scale=True, timeenc=0, freq='h',
                  percent=10, data_name = 'weather', max_len=-1, train_all=False):
         # size [seq_len, label_len, pred_len]
         # info
@@ -389,8 +390,11 @@ class Dataset_Custom(Dataset):
         self.root_path = root_path
         self.data_path = data_path
         self.data_name = data_name
+        
+        self.percent_aug = percent_aug
         self.aug_path = aug
         self.aug_only = aug_only
+        
         self.__read_data__()
         
         self.enc_in = self.data_x.shape[-1]
@@ -471,32 +475,32 @@ class Dataset_Custom(Dataset):
         trend_pk = self.save_stl + '/trend_aug.pk'
         seasonal_pk = self.save_stl + '/seasonal_aug.pk'
         resid_pk = self.save_stl + '/resid_aug.pk'
-        if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
-            with open(trend_pk, 'rb') as f:
-                trend_stamp = pickle.load(f)
-            with open(seasonal_pk, 'rb') as f:
-                seasonal_stamp = pickle.load(f)
-            with open(resid_pk, 'rb') as f:
-                resid_stamp = pickle.load(f)
-        else:
-            trend_stamp = []
-            seasonal_stamp = []
-            resid_stamp = []
-            print('decomposing time-series...')
-            for i, df in tqdm(enumerate(data_raw)):
-                # print(len(df))
-                res = STL(df, period = 52*2).fit()
-                
-                trend_stamp.append(res.trend)
-                seasonal_stamp.append(res.seasonal)
-                resid_stamp.append(res.resid)
-            print('done!')
-            with open(trend_pk, 'wb') as f:
-                pickle.dump(trend_stamp, f)
-            with open(seasonal_pk, 'wb') as f:
-                pickle.dump(seasonal_stamp, f)
-            with open(resid_pk, 'wb') as f:
-                pickle.dump(resid_stamp, f)
+        # if os.path.isfile(trend_pk) and os.path.isfile(seasonal_pk) and os.path.isfile(resid_pk):
+        #     with open(trend_pk, 'rb') as f:
+        #         trend_stamp = pickle.load(f)
+        #     with open(seasonal_pk, 'rb') as f:
+        #         seasonal_stamp = pickle.load(f)
+        #     with open(resid_pk, 'rb') as f:
+        #         resid_stamp = pickle.load(f)
+        # else:
+        trend_stamp = []
+        seasonal_stamp = []
+        resid_stamp = []
+        print('decomposing time-series...')
+        for i, df in tqdm(enumerate(data_raw)):
+            # print(len(df))
+            res = STL(df, period = 52*2).fit()
+            
+            trend_stamp.append(res.trend)
+            seasonal_stamp.append(res.seasonal)
+            resid_stamp.append(res.resid)
+        print('done!')
+        with open(trend_pk, 'wb') as f:
+            pickle.dump(trend_stamp, f)
+        with open(seasonal_pk, 'wb') as f:
+            pickle.dump(seasonal_stamp, f)
+        with open(resid_pk, 'wb') as f:
+            pickle.dump(resid_stamp, f)
         return torch.Tensor(np.stack(trend_stamp)), torch.Tensor(np.stack(seasonal_stamp)), torch.Tensor(np.stack(resid_stamp))
 
     def __read_data__(self):
@@ -567,13 +571,63 @@ class Dataset_Custom(Dataset):
         self.seasonal_stamp = seasonal_stamp[border1:border2]
         self.resid_stamp = resid_stamp[border1:border2]
         self.data_stamp = data_stamp
-
+        
+        self.ds_len = (len(self.data_x) - self.seq_len - self.pred_len + 1) * self.data_x.shape[-1]
         # data aug stuff
         if self.aug_path and self.set_type == 0:
-            self.aug = np.load(self.aug_path).squeeze()
+            self.augs = [np.load(aug_path).squeeze() for aug_path in glob.glob(self.aug_path.replace('-0', '-*'))]
+            print(len(self.augs), 'aug DS found.')
+            history_dict = {i: [] for i, _ in enumerate(self.augs)}
+            history_len = self.augs[0].shape[-1]
+            num_samples = sum(len(aug) for aug in self.augs)
+            print(f"Shape should be: ({num_samples}, {history_len})")
+            # split data by channel
+            for i, df in enumerate(self.augs):
+                channel = i
+                assert df[0].shape[-1] == history_len
+                history_dict[channel].extend(df.flatten().tolist())
+            # print('hist', {k: len(v) for k,v in history_dict.items()})
+            # print('future', {k: len(v) for k,v in future_dict.items()})
+            
+            max_examples_hist = max(len(channel_data) for channel_data in history_dict.values())
+            
+            # Pad the data for each channel
+            for channel in history_dict.keys():
+                pad_length = max_examples_hist - len(history_dict[channel])
+                if pad_length > 0:
+                    print(f"Channel {channel}, pad_length {pad_length}")
+                    history_dict[channel].extend([np.nan] * pad_length)
+            
+            # print('hist', {k: len(v) for k,v in history_dict.items()})
+            # print('future', {k: len(v) for k,v in future_dict.items()})
+            # create df where each channel is its own column
+            self.history_df = pd.DataFrame(history_dict)
+            #normalise channels independantly
+            if self.scale:
+                scaler = StandardScaler()
+                scaler.fit(self.history_df)
+                data_x = scaler.transform(self.history_df)
+            else:
+                data_x = self.history_df.values
+
+            # arrange again to original num_samples x history_len shape
+            data_x = data_x.flatten('F')
+            self.aug = data_x[~np.isnan(data_x)].reshape(num_samples, history_len)
+            print(self.aug.shape, "aug data")
+            # self.aug = np.concatenate(self.data_x)
+            # print(self.aug.shape, "aug data")
+            if self.percent_aug > 0:
+                num_aug = int(self.percent_aug /100 * len(self.aug))
+            else:
+                num_aug = int(- self.percent_aug /100 * self.ds_len)
+            
+            print('sample', self.percent_aug, '%', f'({num_aug}) from', len(self.aug) if self.percent_aug > 0 else self.ds_len)
+            if num_aug < len(self.aug):
+                self.aug = self.aug[np.random.choice(len(self.aug), num_aug, replace=False)]
+            print(f"{len(self.aug)} new ds")
         else:
             self.aug = None
-        self.ds_len = (len(self.data_x) - self.seq_len - self.pred_len + 1) * self.data_x.shape[-1]
+        
         self.aug_num = len(self.aug) if self.aug is not None else 0
         self.aug_len = self.aug.shape[1] if self.aug is not None else 0
         print(self.aug_len, self.seq_len + self.label_len + self.pred_len)

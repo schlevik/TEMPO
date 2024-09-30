@@ -55,7 +55,7 @@ python main_multi_6domain_release.py \
     --prompt $prompt\
     --batch_size 256 \
     --learning_rate $lr \
-    --train_epochs 10 \
+    --train_epochs 100 \
     --decay_fac 0.5 \
     --d_model 768 \
     --n_heads 4 \
@@ -70,7 +70,9 @@ python main_multi_6domain_release.py \
     --model $model \
     --tmax $tmax \
     --cos 1 \
-    --is_gpt 1
+    --is_gpt 1 \
+    --aug ili-clo-0_256_gen_100repeat.npy \
+    --percent_aug -100
     #--num_workers 1 \
     #--is_gpt 1 #>> logs/$model/loar_revin_$percent'_'percent'_'$prompt'_'prompt'_'equal'_'$equal/ettm2_pmt1_no_pool_$model'_'$gpt_layer/test'_'$seq_len'_'$pred_len'_lr'$lr.log
 
